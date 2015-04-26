@@ -1,0 +1,97 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+@section Scripts
+    {
+    <script type="text/javascript">
+           $(document).ready(function () {
+
+               $("#cleanHtml").on("click", function () {
+
+                   var whiteListArray = new Array();
+                   whiteListArray = $("#whiteTags").val().split(",");
+
+                   var blackListArray = new Array();
+                   blackListArray = $("#blackTags").val().split(",");
+
+                   var htmlText = $("#htmlText").val();
+
+                   var useExtension = $("#useExtension").is(":checked") ? true : false;
+                                     
+                   var postedData = {
+                       htmlText: htmlText, whiteList: whiteListArray, blackList: blackListArray, useExtension: useExtension
+                   };
+
+                   $.ajax({
+                       type: "POST",
+                       url: "/Home/Clean",
+                       data: postedData,
+                       cache: false,
+                       traditional:true,
+                       success: function (data) {
+                           $("#cleanedHtml").val(data);
+                           $("#myModal").modal('show');
+                       },
+                       error: function (xhr, status, error) {
+                           alert(error);
+                       }
+
+                       });
+               });
+
+
+               $("#cleanBoxes").on("click", function () {
+
+                   $("#whiteTags").val("");
+                   $("#blackTags").val("");
+                   $("#htmlText").val("");
+               });
+           });
+    </script>
+
+}
+
+<div class="jumbotron">
+    <h1>ASP.NET MVC html parser</h1>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <h2>Please, enter valid HTML text:</h2>
+        <p>
+            @Html.TextArea("htmlText")
+        </p>
+        <p><button id="cleanBoxes" type="submit" class="btn btn-default">Clear enterboxes</button></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Enter "white" tags by comma:</h2>
+        <p>
+            @Html.TextArea("whiteTags")
+        </p>
+        <p>Use extension method</p>
+        <p><input type="checkbox" id="useExtension" /></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Enter "black" tags by comma:</h2>
+        <p>@Html.TextArea("blackTags")</p>
+        <p><button id="cleanHtml" type="submit" class="btn btn-default">Clean html</button></p>
+    </div>
+</div>
+
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Cleaned html:</h4>
+            </div>
+            <div class="modal-body">
+                <textarea id="cleanedHtml" rows="8" style="width: 100%"></textarea> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
